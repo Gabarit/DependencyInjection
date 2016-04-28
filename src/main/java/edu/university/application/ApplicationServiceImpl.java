@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,13 +25,14 @@ public class ApplicationServiceImpl implements ApplicationService {
     public List<Product> getEntitiesWithEvenID() {
 
         List<Product> products = repository.getProducts();
+        List<Product> newProd = new ArrayList<Product>();
 
         for (Product product: products) {
-            if((product.getId()%2)!=0)
-                products.remove(product);
+            if((product.getId()%2)==0)
+                newProd.add(product);
         }
 
-        return products;
+        return newProd;
     }
 
     @Transactional

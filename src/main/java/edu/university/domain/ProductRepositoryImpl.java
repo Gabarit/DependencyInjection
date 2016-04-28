@@ -1,5 +1,6 @@
 package edu.university.domain;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Repository;
 
@@ -36,6 +37,6 @@ public class ProductRepositoryImpl implements ProductRepository {
 
     @Transactional
     public List<Product> getProducts() {
-        return null;
+        return (List<Product>) em.createQuery("SELECT p FROM Product p").getResultList();
     }
 }
