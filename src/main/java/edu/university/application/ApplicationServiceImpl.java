@@ -5,6 +5,7 @@ import edu.university.domain.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -18,10 +19,10 @@ import java.util.List;
 public class ApplicationServiceImpl implements ApplicationService {
 
     @Autowired
-    ProductRepository repository;
+    private ProductRepository repository;
 
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Product> getEntitiesWithEvenID() {
 
         List<Product> products = repository.getProducts();
@@ -41,9 +42,12 @@ public class ApplicationServiceImpl implements ApplicationService {
         List<Product> products = repository.getProducts();
 
         for (Product product: products) {
-            if(product.getName().startsWith("E"))
-                product.setName(product.getName()+"_3");
+            if(product.getName().startsWith("E")) {
+                System.out.println("Name: " + product.getName());
+                product.setName(product.getName() + "_3");
+                System.out.println("New name:" + product.getName());
                 repository.updateProduct(product);
+            }
         }
     }
 }

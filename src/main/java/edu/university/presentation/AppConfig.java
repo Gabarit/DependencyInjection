@@ -3,45 +3,46 @@ package edu.university.presentation;
  * Created by gleb on 15.04.16.
  */
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.*;
-//import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.EclipseLinkJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.transaction.annotation.TransactionManagementConfigurer;
 
-import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.util.Map;
 
 @Configuration
 @ComponentScan("edu.university")
-public class AppConfig {
+public class AppConfig {//implements TransactionManagementConfigurer{
 
     @Bean
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource) {
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
 
-        LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
-        //sudo docker run -d --net="host" -it market-mysql
-        Map<String, Object> jpaProp = em.getJpaPropertyMap();
+        final LocalContainerEntityManagerFactoryBean emf = new LocalContainerEntityManagerFactoryBean();
+        Map<String, Object> jpaProp = emf.getJpaPropertyMap();
         jpaProp.put("eclipselink.weaving", "false");
-        em.setJpaPropertyMap(jpaProp);
-        em.setDataSource(dataSource);
-        em.setPackagesToScan("edu.university.domain");
+
+        emf.setJpaPropertyMap(jpaProp);
+        emf.setDataSource(dataSource());
+        emf.setPackagesToScan("edu.university.domain");
 
         JpaVendorAdapter vendorAdapter = new EclipseLinkJpaVendorAdapter();
-        em.setJpaVendorAdapter(vendorAdapter);
+        emf.setJpaVendorAdapter(vendorAdapter);
 
-        return em;
+        return emf;
     }
 
     @Bean
     public DataSource dataSource() {
 
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
+        final DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName("com.mysql.jdbc.Driver");
         dataSource.setUrl("jdbc:mysql://localhost:3306/supermarket");
         dataSource.setUsername("root");
@@ -50,12 +51,21 @@ public class AppConfig {
         return  dataSource;
     }
 
-    @Bean
-    public PlatformTransactionManager transactionManager(EntityManagerFactory emf) {
-        JpaTransactionManager transactionManager = new JpaTransactionManager();
-        transactionManager.setEntityManagerFactory(emf);
+    /*@Autowired
+    EntityManagerFactory emf;
 
-        return  transactionManager;
+    @Bean
+    public PlatformTransactionManager transactionManager() {
+        final JpaTransactionManager tm = new JpaTransactionManager();
+
+
+        tm.setEntityManagerFactory(emf);
+        //tm.setDataSource(dataSource());
+        return tm;
+    }
+
+    /*public PlatformTransactionManager annotationDrivenTransactionManager() {
+        return transactionManager();
     }
 
    /* @Bean

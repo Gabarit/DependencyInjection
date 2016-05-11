@@ -16,7 +16,7 @@ import java.util.Scanner;
 public class Main {
 
     public static void main(String args[]){
-        ApplicationContext appCtx = new AnnotationConfigApplicationContext(AppConfig.class);
+        ApplicationContext appCtx = new AnnotationConfigApplicationContext(AppConfig.class,TransactionManagementConfig.class);
         ApplicationService service = (ApplicationService) appCtx.getBean(ApplicationService.class);
 
         Scanner input = new Scanner(System.in);

@@ -12,7 +12,7 @@ public class Product {
 
     @Id
     private long id; // primary key
-    private String name; // model name
+    private String name; // product name
     private float price; // product price in dollars
 
     // get set section
